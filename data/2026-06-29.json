@@ -8,10 +8,10 @@
       "source": "BBC Science",
       "summary": "Researchers at MIT have developed a groundbreaking filter technology that can remove up to 99% of microplastics from seawater. The device uses a special magnetic material that attracts plastic particles without harming marine life. Scientists believe this innovation could be deployed on ships within the next three years. Environmental groups have praised the discovery as a major step forward in fighting ocean pollution. Governments in Europe and Asia have already expressed interest in funding large-scale trials.",
       "vocabulary": [
-        {"word": "microplastics", "definition": "tiny plastic particles smaller than 5mm found in the environment", "example": "Microplastics have been found even in the deepest parts of the ocean."},
-        {"word": "groundbreaking", "definition": "innovative and important; never done before", "example": "The groundbreaking research changed how we treat the disease."},
-        {"word": "deploy", "definition": "to put something into use or service", "example": "The army was deployed to help with disaster relief."},
-        {"word": "trial", "definition": "a test to see how well something works", "example": "The new drug is currently in clinical trials."}
+        {"word": "microplastics", "definition": "環境中に存在する5mm以下の微小なプラスチック粒子", "example": "Microplastics have been found even in the deepest parts of the ocean."},
+        {"word": "groundbreaking", "definition": "革新的で重要な、今まで誰もやったことがない", "example": "The groundbreaking research changed how we treat the disease."},
+        {"word": "deploy", "definition": "何かを実際に使用・運用できる状態にする", "example": "The army was deployed to help with disaster relief."},
+        {"word": "trial", "definition": "何かがうまく機能するかを確かめるためのテスト", "example": "The new drug is currently in clinical trials."}
       ],
       "question": "What percentage of microplastics can the new filter technology remove from seawater?",
       "difficulty": "intermediate"
@@ -23,10 +23,10 @@
       "source": "BBC Technology",
       "summary": "A new artificial intelligence system developed by Google DeepMind has shown remarkable accuracy in detecting early-stage cancers from medical scans. In clinical trials involving over 50,000 patients, the AI outperformed human radiologists in identifying tumors in their earliest, most treatable stages. The system analyzes CT scans and MRIs in seconds, compared to hours for human doctors. Medical experts say this could dramatically improve survival rates for patients in countries with limited access to specialist doctors. The technology is expected to receive regulatory approval in the US and UK by the end of the year.",
       "vocabulary": [
-        {"word": "radiologist", "definition": "a doctor who specializes in reading medical images like X-rays and MRI scans", "example": "The radiologist studied the X-ray carefully before giving her diagnosis."},
-        {"word": "tumor", "definition": "an abnormal growth of cells in the body, which can be cancerous", "example": "The tumor was discovered early, which made treatment much easier."},
-        {"word": "regulatory approval", "definition": "official permission from a government body to use a product or service", "example": "The new vaccine received regulatory approval after successful trials."},
-        {"word": "outperform", "definition": "to do better than someone or something else", "example": "The electric car outperformed petrol cars in the fuel efficiency test."}
+        {"word": "radiologist", "definition": "レントゲンやMRIなどの医療画像を専門に読む医師", "example": "The radiologist studied the X-ray carefully before giving her diagnosis."},
+        {"word": "tumor", "definition": "体内の細胞が異常に増殖したもの（がんの場合もある）", "example": "The tumor was discovered early, which made treatment much easier."},
+        {"word": "regulatory approval", "definition": "政府機関から製品やサービスの使用を認める公式な許可", "example": "The new vaccine received regulatory approval after successful trials."},
+        {"word": "outperform", "definition": "他の人や物よりも優れた結果を出す", "example": "The electric car outperformed petrol cars in the fuel efficiency test."}
       ],
       "question": "How does the AI system's speed compare to human doctors when analyzing medical scans?",
       "difficulty": "intermediate"
@@ -38,10 +38,10 @@
       "source": "Reuters",
       "summary": "Japan's government has announced an accelerated plan to achieve carbon neutrality ten years earlier than its previous target of 2050. The new strategy includes tripling the country's solar energy capacity, investing heavily in hydrogen fuel technology, and phasing out coal power plants by 2032. Prime Minister Hiroshi Tanaka called it the most significant environmental commitment in Japan's modern history. The plan is expected to create over two million new jobs in the renewable energy sector. Critics, however, argue that the targets are too ambitious and warn of potential energy shortages during the transition period.",
       "vocabulary": [
-        {"word": "carbon neutral", "definition": "producing no net carbon dioxide emissions into the atmosphere", "example": "The company aims to be carbon neutral by switching to renewable energy."},
-        {"word": "phase out", "definition": "to gradually stop using or producing something", "example": "The government plans to phase out single-use plastics within five years."},
-        {"word": "renewable energy", "definition": "energy from sources that are naturally replenished, like solar or wind", "example": "Renewable energy now powers 30% of the country's electricity grid."},
-        {"word": "ambitious", "definition": "requiring a lot of effort and determination to achieve", "example": "The startup had ambitious plans to expand into 50 countries within two years."}
+        {"word": "carbon neutral", "definition": "大気中への二酸化炭素の排出量が実質ゼロの状態", "example": "The company aims to be carbon neutral by switching to renewable energy."},
+        {"word": "phase out", "definition": "何かを徐々に使用・生産しなくなること", "example": "The government plans to phase out single-use plastics within five years."},
+        {"word": "renewable energy", "definition": "太陽光や風力など、自然に補充される源から得られるエネルギー", "example": "Renewable energy now powers 30% of the country's electricity grid."},
+        {"word": "ambitious", "definition": "達成するために多大な努力と意志を必要とする（野心的な）", "example": "The startup had ambitious plans to expand into 50 countries within two years."}
       ],
       "question": "By what year does Japan plan to phase out its coal power plants under the new strategy?",
       "difficulty": "intermediate"
@@ -53,10 +53,10 @@
       "source": "NPR Science",
       "summary": "An international coalition of space agencies, including NASA, ESA, and JAXA, has announced plans to begin construction of a permanent lunar base by 2031. The facility, named Artemis Base Camp, will house up to twelve astronauts at a time and serve as a launching point for future missions to Mars. Robots and autonomous machines will begin preparing the site in 2028, three years before human crews arrive. Scientists say the moon's south pole was chosen for the base because of confirmed water ice deposits in permanently shadowed craters. The project will cost an estimated 200 billion dollars and involve contributions from more than 20 countries.",
       "vocabulary": [
-        {"word": "coalition", "definition": "a group of different organizations or countries working together", "example": "A coalition of environmental groups lobbied the government for stricter pollution laws."},
-        {"word": "autonomous", "definition": "able to work or operate independently without human control", "example": "Autonomous vehicles use sensors to navigate without a human driver."},
-        {"word": "lunar", "definition": "relating to the moon", "example": "The lunar surface is covered with fine grey dust called regolith."},
-        {"word": "deposit", "definition": "a natural accumulation of a substance found in the ground or on a surface", "example": "Large deposits of gold were discovered in the mountains."}
+        {"word": "coalition", "definition": "共通の目的のために協力する異なる組織や国のグループ", "example": "A coalition of environmental groups lobbied the government for stricter pollution laws."},
+        {"word": "autonomous", "definition": "人間の制御なしに独立して動作・運転できる", "example": "Autonomous vehicles use sensors to navigate without a human driver."},
+        {"word": "lunar", "definition": "月に関する・月の", "example": "The lunar surface is covered with fine grey dust called regolith."},
+        {"word": "deposit", "definition": "地中や表面に自然に蓄積した物質の層", "example": "Large deposits of gold were discovered in the mountains."}
       ],
       "question": "Why was the moon's south pole chosen as the location for the Artemis Base Camp?",
       "difficulty": "advanced"
@@ -68,10 +68,10 @@
       "source": "Reuters",
       "summary": "A new global report shows that online language learning has reached an all-time high, with over 600 million active users on digital platforms in 2026. English remains the most studied language worldwide, followed by Spanish, Mandarin, and Japanese. The report highlights that younger generations aged 18-35 account for nearly 70% of all language learners. Experts attribute the surge to increased international job opportunities and the popularity of foreign media, especially Korean and Japanese entertainment. Language learning apps now use AI to personalize lessons and provide real-time pronunciation feedback, making them significantly more effective than traditional methods.",
       "vocabulary": [
-        {"word": "attribute", "definition": "to say that something is caused by a particular reason", "example": "Scientists attribute the rise in temperatures to increased greenhouse gas emissions."},
-        {"word": "surge", "definition": "a sudden and large increase", "example": "There was a surge in demand for face masks during the pandemic."},
-        {"word": "personalize", "definition": "to design or change something to suit one specific person's needs", "example": "The app personalizes your workout plan based on your fitness goals."},
-        {"word": "pronunciation", "definition": "the way in which a word or language is spoken", "example": "Her pronunciation improved dramatically after six months of speaking practice."}
+        {"word": "attribute", "definition": "何かの原因が特定の理由によるものだと言う", "example": "Scientists attribute the rise in temperatures to increased greenhouse gas emissions."},
+        {"word": "surge", "definition": "突然の大幅な増加", "example": "There was a surge in demand for face masks during the pandemic."},
+        {"word": "personalize", "definition": "特定の人のニーズに合わせて設計・変更する", "example": "The app personalizes your workout plan based on your fitness goals."},
+        {"word": "pronunciation", "definition": "単語や言語の発音の仕方", "example": "Her pronunciation improved dramatically after six months of speaking practice."}
       ],
       "question": "What two factors do experts say are driving the surge in foreign language learning among young people?",
       "difficulty": "beginner"

@@ -100,7 +100,7 @@ Return a JSON object in exactly this format:
       "source": "news source name",
       "summary": "Clear 3-5 sentence summary in natural English (B2-C1 level)",
       "vocabulary": [
-        {{"word": "word", "definition": "simple definition", "example": "example sentence"}}
+        {{"word": "word", "definition": "日本語で簡単な意味の説明", "example": "example sentence in English"}}
       ],
       "question": "One comprehension question",
       "difficulty": "beginner|intermediate|advanced"
