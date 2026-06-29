@@ -15,7 +15,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
-import anthropic
+import google.generativeai as genai
 import httpx
 
 RSS_FEEDS = [
@@ -76,7 +76,8 @@ def fetch_all_news(max_articles: int = 25) -> list[dict]:
 
 
 def create_daily_news(articles: list[dict]) -> dict:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
     articles_text = "\n\n".join(
         f"[{i+1}] Source: {a['source']} | Category: {a['category']}\n"
@@ -112,12 +113,8 @@ Articles:
 
 Return only the JSON object, no other text."""
 
-    msg = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=4096,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    text = msg.content[0].text
+    response = model.generate_content(prompt)
+    text = response.text
     start, end = text.find("{"), text.rfind("}") + 1
     if start == -1 or end <= start:
         raise ValueError("No JSON in response")
