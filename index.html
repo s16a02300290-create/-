@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily English News — Listening Practice</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --card: #1e2235;
+      --accent: #6c63ff;
+      --accent2: #ff6584;
+      --text: #e8eaf0;
+      --muted: #8b92a8;
+      --border: #2a2d42;
+      --success: #4ade80;
+      --warn: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { display: flex; align-items: center; gap: 0.75rem; }
+    .logo-icon { font-size: 1.4rem; }
+    .logo-text {
+      font-size: 1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .date-badge {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.3rem 0.8rem;
+    }
+
+    main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+    /* Status */
+    #status-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+    .dot.error { background: var(--accent2); }
+
+    /* Player */
+    #player-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    #player-bar.visible { display: block; }
+    .player-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .player-controls { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .play-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--accent); border: none; color: white;
+      font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: transform 0.15s;
+    }
+    .play-btn:hover { transform: scale(1.08); }
+    .speed-controls { display: flex; gap: 0.35rem; }
+    .speed-btn {
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); border-radius: 6px; padding: 0.28rem 0.5rem;
+      font-size: 0.72rem; cursor: pointer; transition: all 0.15s;
+    }
+    .speed-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+    .progress-wrap { flex: 1; min-width: 80px; }
+    .progress-bg { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.5s linear; }
+    .voice-sel {
+      background: var(--card); border: 1px solid var(--border); color: var(--text);
+      border-radius: 6px; padding: 0.28rem 0.45rem; font-size: 0.72rem; max-width: 150px;
+    }
+
+    /* Cards */
+    #articles { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.8rem; }
+    .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .tag {
+      border-radius: 20px; padding: 0.18rem 0.6rem; font-size: 0.7rem;
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+    }
+    .tag.beginner { background: rgba(74,222,128,.12); color: #4ade80; border-color: transparent; }
+    .tag.intermediate { background: rgba(251,191,36,.12); color: #fbbf24; border-color: transparent; }
+    .tag.advanced { background: rgba(248,113,113,.12); color: #f87171; border-color: transparent; }
+    .num {
+      font-size: 0.7rem; color: var(--muted); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 50%;
+      width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.4; }
+    .card-source { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.9rem; }
+    .card-summary { font-size: 0.88rem; line-height: 1.75; color: #c8cad8; margin-bottom: 1rem; }
+
+    /* Vocab */
+    .vocab-hd {
+      display: flex; align-items: center; gap: 0.4rem;
+      cursor: pointer; color: var(--accent); font-size: 0.8rem; font-weight: 600;
+      user-select: none; margin-bottom: 0.6rem;
+    }
+    .vocab-hd svg { transition: transform 0.2s; }
+    .vocab-hd.open svg { transform: rotate(180deg); }
+    .vocab-items { display: none; flex-direction: column; gap: 0.5rem; margin-bottom: 0.9rem; }
+    .vocab-items.open { display: flex; }
+    .vocab-item { background: var(--surface); border-radius: 8px; padding: 0.6rem 0.9rem; }
+    .vword { font-weight: 700; color: var(--accent); font-size: 0.85rem; }
+    .vdef { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+    .vex { font-size: 0.78rem; color: #9095aa; margin-top: 0.15rem; font-style: italic; }
+
+    /* Question */
+    .qbox {
+      background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.3);
+      border-radius: 9px; padding: 0.8rem 1rem; margin-bottom: 0.9rem;
+    }
+    .qlabel { font-size: 0.68rem; color: var(--accent); font-weight: 700; letter-spacing: .05em; margin-bottom: 0.3rem; }
+    .qtext { font-size: 0.85rem; }
+
+    /* Actions */
+    .card-actions { display: flex; gap: 0.6rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+    .listen-btn {
+      display: flex; align-items: center; gap: 0.35rem;
+      background: var(--accent); color: white; border: none;
+      border-radius: 8px; padding: 0.45rem 0.9rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      transition: opacity .2s;
+    }
+    .listen-btn:hover { opacity: .85; }
+    .listen-btn.playing { background: var(--accent2); }
+    .done-btn {
+      display: flex; align-items: center; gap: 0.35rem;
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 8px; padding: 0.45rem 0.9rem; font-size: 0.8rem; cursor: pointer; transition: all .2s;
+    }
+    .done-btn.done { border-color: var(--success); color: var(--success); }
+
+    /* History */
+    .history { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    .history-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: .05em; margin-bottom: 0.75rem; }
+    .history-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .chip {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.35rem 0.7rem; font-size: 0.78rem; cursor: pointer; color: var(--muted); transition: all .15s;
+    }
+    .chip:hover, .chip.cur { border-color: var(--accent); color: var(--accent); }
+
+    .empty { text-align: center; padding: 4rem 1rem; }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .empty-desc { color: var(--muted); font-size: 0.85rem; }
+
+    #toast {
+      position: fixed; bottom: 1.25rem; right: 1.25rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 9px; padding: 0.65rem 1rem; font-size: 0.82rem;
+      transform: translateY(80px); opacity: 0; transition: all .3s; z-index: 999;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <span class="logo-icon">🎧</span>
+    <span class="logo-text">Daily English News</span>
+  </div>
+  <span class="date-badge" id="hdate"></span>
+</header>
+
+<main>
+  <div id="status-bar">
+    <div class="spinner" id="spin"></div>
+    <div class="dot" id="dot" style="display:none"></div>
+    <span id="stxt">Loading today's news...</span>
+  </div>
+
+  <div id="player-bar">
+    <div class="player-title" id="ptitle">—</div>
+    <div class="player-controls">
+      <button class="play-btn" id="ppbtn" onclick="togglePlay()">▶</button>
+      <div class="progress-wrap"><div class="progress-bg"><div class="progress-fill" id="pfill"></div></div></div>
+      <div class="speed-controls">
+        <button class="speed-btn" data-s="0.75" onclick="setSpeed(0.75)">×0.75</button>
+        <button class="speed-btn active" data-s="1" onclick="setSpeed(1)">×1</button>
+        <button class="speed-btn" data-s="1.25" onclick="setSpeed(1.25)">×1.25</button>
+        <button class="speed-btn" data-s="1.5" onclick="setSpeed(1.5)">×1.5</button>
+      </div>
+      <select class="voice-sel" id="vsel" onchange="onVoiceChange()"></select>
+    </div>
+  </div>
+
+  <div id="articles"></div>
+
+  <div class="history" id="hist" style="display:none">
+    <div class="history-label">PAST EDITIONS</div>
+    <div class="history-chips" id="hchips"></div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? '.'
+    : location.pathname.replace(/\/$/, '');
+
+  let synth = window.speechSynthesis;
+  let utter = null, playing = false, curId = null, speed = 1;
+  let voices = [], selVoice = null;
+  let done = new Set(JSON.parse(localStorage.getItem('done') || '[]'));
+  let curDate = null;
+
+  document.getElementById('hdate').textContent = new Date().toLocaleDateString('en-US', {
+    weekday:'short', month:'short', day:'numeric', year:'numeric'
+  });
+
+  function setStatus(state, msg) {
+    document.getElementById('spin').style.display = state === 'loading' ? 'block' : 'none';
+    const dot = document.getElementById('dot');
+    dot.style.display = state !== 'loading' ? 'block' : 'none';
+    dot.className = 'dot' + (state === 'error' ? ' error' : '');
+    document.getElementById('stxt').textContent = msg;
+  }
+
+  function toast(msg, ms = 2800) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  // Voices
+  function loadVoices() {
+    voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+    const sel = document.getElementById('vsel');
+    sel.innerHTML = voices.map((v, i) =>
+      `<option value="${i}">${v.name.slice(0,22)}${v.default?' ★':''}</option>`
+    ).join('') || '<option>No EN voice</option>';
+    selVoice = voices[0] || null;
+  }
+  synth.addEventListener('voiceschanged', loadVoices);
+  loadVoices();
+
+  function onVoiceChange() {
+    selVoice = voices[parseInt(document.getElementById('vsel').value)] || null;
+  }
+
+  function setSpeed(s) {
+    speed = s;
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.toggle('active', parseFloat(b.dataset.s) === s));
+  }
+
+  // TTS
+  function speak(text, title, id) {
+    if (playing) { synth.cancel(); playing = false; if (curId === id) { curId = null; updBtns(); return; } }
+    curId = id;
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = speed; u.lang = 'en-US';
+    if (selVoice) u.voice = selVoice;
+    utter = u; playing = true;
+    document.getElementById('player-bar').classList.add('visible');
+    document.getElementById('ptitle').textContent = '🎧 ' + title;
+    document.getElementById('ppbtn').textContent = '⏸';
+    updBtns();
+    const dur = text.length / 15 * 1000 / speed;
+    const t0 = Date.now();
+    const iv = setInterval(() => {
+      if (!playing) { clearInterval(iv); return; }
+      document.getElementById('pfill').style.width = Math.min(100, (Date.now()-t0)/dur*100) + '%';
+    }, 200);
+    u.onend = u.onerror = () => {
+      playing = false; utter = null; curId = null;
+      clearInterval(iv);
+      document.getElementById('ppbtn').textContent = '▶';
+      document.getElementById('player-bar').classList.remove('visible');
+      document.getElementById('pfill').style.width = '0%';
+      updBtns();
+    };
+    synth.speak(u);
+  }
+
+  function togglePlay() {
+    if (synth.paused) { synth.resume(); document.getElementById('ppbtn').textContent = '⏸'; }
+    else if (playing) { synth.pause(); document.getElementById('ppbtn').textContent = '▶'; }
+  }
+
+  function updBtns() {
+    document.querySelectorAll('.listen-btn').forEach(b => {
+      const active = playing && curId === parseInt(b.dataset.id);
+      b.classList.toggle('playing', active);
+      b.querySelector('.bi').textContent = active ? '⏹' : '▶';
+      b.querySelector('.bl').textContent = active ? 'Stop' : 'Listen';
+    });
+  }
+
+  function toggleDone(id) {
+    const key = curDate + '-' + id;
+    if (done.has(key)) done.delete(key); else { done.add(key); toast('✓ Marked as done!'); }
+    localStorage.setItem('done', JSON.stringify([...done]));
+    document.querySelectorAll('.done-btn').forEach(b => {
+      if (parseInt(b.dataset.id) === id) {
+        b.classList.toggle('done', done.has(key));
+        b.textContent = done.has(key) ? '✓ Done' : '○ Mark Done';
+      }
+    });
+  }
+
+  function toggleVocab(id) {
+    document.getElementById('vi-'+id).classList.toggle('open');
+    document.getElementById('vh-'+id).classList.toggle('open');
+  }
+
+  function render(data) {
+    curDate = data.date;
+    const c = document.getElementById('articles');
+    c.innerHTML = '';
+    if (!data.articles?.length) {
+      c.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">No articles</div><div class="empty-desc">Check back tomorrow!</div></div>';
+      return;
+    }
+    data.articles.forEach((a, i) => {
+      const dk = curDate + '-' + a.id;
+      const isDone = done.has(dk);
+      const vocabHtml = (a.vocabulary||[]).map(v => `
+        <div class="vocab-item">
+          <div class="vword">${v.word}</div>
+          <div class="vdef">${v.definition}</div>
+          ${v.example ? `<div class="vex">"${v.example}"</div>` : ''}
+        </div>`).join('');
+
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.id = 'c-'+a.id;
+      el.innerHTML = `
+        <div class="card-top">
+          <div class="tags">
+            <span class="tag">${a.category||'News'}</span>
+            <span class="tag ${a.difficulty||'intermediate'}">${a.difficulty||'intermediate'}</span>
+          </div>
+          <div class="num">${i+1}</div>
+        </div>
+        <div class="card-title">${a.title}</div>
+        <div class="card-source">📰 ${a.source||''}</div>
+        <div class="card-summary">${a.summary}</div>
+        ${vocabHtml ? `
+          <div class="vocab-hd" id="vh-${a.id}" onclick="toggleVocab(${a.id})">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8L1 3h10z"/></svg>
+            Key Vocabulary (${a.vocabulary?.length||0} words)
+          </div>
+          <div class="vocab-items" id="vi-${a.id}">${vocabHtml}</div>
+        ` : ''}
+        ${a.question ? `
+          <div class="qbox">
+            <div class="qlabel">COMPREHENSION QUESTION</div>
+            <div class="qtext">💭 ${a.question}</div>
+          </div>` : ''}
+        <div class="card-actions">
+          <button class="listen-btn" data-id="${a.id}"
+            onclick="speak(${JSON.stringify(a.summary)}, ${JSON.stringify(a.title)}, ${a.id})">
+            <span class="bi">▶</span><span class="bl">Listen</span>
+          </button>
+          <button class="done-btn ${isDone?'done':''}" data-id="${a.id}" onclick="toggleDone(${a.id})">
+            ${isDone ? '✓ Done' : '○ Mark Done'}
+          </button>
+        </div>`;
+      c.appendChild(el);
+    });
+    setStatus('ok', `${data.articles.length} articles — ${data.date}`);
+  }
+
+  // Data loading
+  async function loadDate(dateStr) {
+    setStatus('loading', 'Loading ' + dateStr + '...');
+    try {
+      const r = await fetch(`${BASE}/data/${dateStr}.json`);
+      if (!r.ok) throw new Error('Not found');
+      render(await r.json());
+      document.getElementById('articles').scrollIntoView({behavior:'smooth'});
+      updateChips(dateStr);
+    } catch(e) { setStatus('error', 'Failed to load: ' + e.message); }
+  }
+
+  async function loadLatest() {
+    setStatus('loading', "Loading today's news...");
+    try {
+      const r = await fetch(`${BASE}/data/latest.json`);
+      if (!r.ok) throw new Error('No data yet');
+      const data = await r.json();
+      render(data);
+      loadIndex();
+    } catch(e) {
+      setStatus('error', "Today's news not ready yet. Check back later!");
+      document.getElementById('articles').innerHTML = `<div class="empty">
+        <div class="empty-icon">🕐</div>
+        <div class="empty-title">Not ready yet</div>
+        <div class="empty-desc">Today's news is generated every morning at 6:00 AM JST.<br>Please check back later.</div>
+      </div>`;
+      loadIndex();
+    }
+  }
+
+  async function loadIndex() {
+    try {
+      const r = await fetch(`${BASE}/data/index.json`);
+      if (!r.ok) return;
+      const idx = await r.json();
+      if (idx.length > 1) {
+        const hs = document.getElementById('hist');
+        hs.style.display = 'block';
+        renderChips(idx);
+      }
+    } catch(e) {}
+  }
+
+  function renderChips(idx) {
+    document.getElementById('hchips').innerHTML = idx.map(d =>
+      `<div class="chip ${d===curDate?'cur':''}" onclick="loadDate('${d}')" id="chip-${d}">${d}</div>`
+    ).join('');
+  }
+
+  function updateChips(dateStr) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('cur'));
+    const ch = document.getElementById('chip-'+dateStr);
+    if (ch) ch.classList.add('cur');
+    curDate = dateStr;
+  }
+
+  loadLatest();
+</script>
+</body>
+</html>
