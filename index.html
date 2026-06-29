@@ -261,6 +261,7 @@
   let voices = [], selVoice = null;
   let done = new Set(JSON.parse(localStorage.getItem('done') || '[]'));
   let curDate = null;
+  let articleStore = [];
 
   document.getElementById('hdate').textContent = new Date().toLocaleDateString('en-US', {
     weekday:'short', month:'short', day:'numeric', year:'numeric'
@@ -362,8 +363,14 @@
     document.getElementById('vh-'+id).classList.toggle('open');
   }
 
+  function speakById(i) {
+    const a = articleStore[i];
+    if (a) speak(a.summary, a.title, a.id);
+  }
+
   function render(data) {
     curDate = data.date;
+    articleStore = data.articles || [];
     const c = document.getElementById('articles');
     c.innerHTML = '';
     if (!data.articles?.length) {
@@ -408,7 +415,7 @@
           </div>` : ''}
         <div class="card-actions">
           <button class="listen-btn" data-id="${a.id}"
-            onclick="speak(${JSON.stringify(a.summary)}, ${JSON.stringify(a.title)}, ${a.id})">
+            onclick="speakById(${i})">
             <span class="bi">▶</span><span class="bl">Listen</span>
           </button>
           <button class="done-btn ${isDone?'done':''}" data-id="${a.id}" onclick="toggleDone(${a.id})">
