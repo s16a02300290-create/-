@@ -1,7 +1,9 @@
-import feedparser
-import httpx
-from datetime import datetime, timezone
+import html
+import re
+import xml.etree.ElementTree as ET
 from typing import Any
+
+import httpx
 
 RSS_FEEDS = [
     {
@@ -20,19 +22,6 @@ RSS_FEEDS = [
         "category": "Science",
     },
     {
-        "name": "Reuters Top News",
-        "url": "https://feeds.reuters.com/reuters/topNews",
-        "category": "World",
-    },
-    {
-        "name": "Reuters Business",
-        "url": "https://feeds.reuters.com/reuters/businessNews",
-        "category": "Business",
-    },
-]
-
-FALLBACK_FEEDS = [
-    {
         "name": "NPR News",
         "url": "https://feeds.npr.org/1001/rss.xml",
         "category": "World",
@@ -42,32 +31,44 @@ FALLBACK_FEEDS = [
         "url": "https://feeds.npr.org/1019/rss.xml",
         "category": "Technology",
     },
-    {
-        "name": "Associated Press Top Headlines",
-        "url": "https://rsshub.app/apnews/topics/apf-topnews",
-        "category": "World",
-    },
 ]
+
+
+def _strip_tags(text: str) -> str:
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = html.unescape(text)
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def fetch_feed(feed_info: dict[str, str]) -> list[dict[str, Any]]:
     articles = []
     try:
-        parsed = feedparser.parse(feed_info["url"])
-        for entry in parsed.entries[:5]:
-            summary = entry.get("summary", "") or entry.get("description", "")
-            if len(summary) < 30:
+        resp = httpx.get(feed_info["url"], timeout=10, follow_redirects=True,
+                         headers={"User-Agent": "Mozilla/5.0"})
+        resp.raise_for_status()
+        root = ET.fromstring(resp.text)
+        ns = {"media": "http://search.yahoo.com/mrss/",
+              "content": "http://purl.org/rss/1.0/modules/content/"}
+
+        items = root.findall(".//item")
+        for item in items[:6]:
+            title = item.findtext("title", "").strip()
+            description = item.findtext("description", "") or ""
+            description = _strip_tags(description)
+            link = item.findtext("link", "").strip()
+            pub_date = item.findtext("pubDate", "")
+
+            if not title or len(description) < 30:
                 continue
-            articles.append(
-                {
-                    "title": entry.get("title", ""),
-                    "summary": summary,
-                    "link": entry.get("link", ""),
-                    "published": entry.get("published", ""),
-                    "source": feed_info["name"],
-                    "category": feed_info["category"],
-                }
-            )
+
+            articles.append({
+                "title": title,
+                "summary": description[:800],
+                "link": link,
+                "published": pub_date,
+                "source": feed_info["name"],
+                "category": feed_info["category"],
+            })
     except Exception as e:
         print(f"Error fetching {feed_info['name']}: {e}")
     return articles
@@ -81,13 +82,6 @@ def fetch_all_news(max_articles: int = 20) -> list[dict[str, Any]]:
         all_articles.extend(articles)
         if len(all_articles) >= max_articles:
             break
-
-    if len(all_articles) < 10:
-        for feed in FALLBACK_FEEDS:
-            articles = fetch_feed(feed)
-            all_articles.extend(articles)
-            if len(all_articles) >= max_articles:
-                break
 
     seen_titles: set[str] = set()
     unique_articles = []
