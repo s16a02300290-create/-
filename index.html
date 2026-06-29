@@ -282,13 +282,43 @@
     setTimeout(() => t.classList.remove('show'), ms);
   }
 
-  // Voices
+  // Voices — pick the most natural-sounding English voice available
+  const PREFERRED = [
+    'google us english',
+    'google uk english female',
+    'microsoft aria online (natural)',
+    'microsoft jenny online (natural)',
+    'microsoft emma online (natural)',
+    'microsoft guy online (natural)',
+    'samantha (enhanced)',
+    'ava (enhanced)',
+    'allison (enhanced)',
+    'alex',
+    'samantha',
+    'google uk english male',
+  ];
+
+  function scorevoice(v) {
+    const n = v.name.toLowerCase();
+    const idx = PREFERRED.indexOf(n);
+    if (idx !== -1) return 1000 - idx;
+    if (n.includes('enhanced')) return 500;
+    if (n.includes('natural')) return 490;
+    if (n.includes('online')) return 400;
+    if (n.includes('google')) return 300;
+    if (n.includes('microsoft')) return 200;
+    if (v.default) return 50;
+    return 0;
+  }
+
   function loadVoices() {
-    voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+    const all = synth.getVoices().filter(v => v.lang.startsWith('en'));
+    if (!all.length) return;
+    voices = [...all].sort((a, b) => scorevoice(b) - scorevoice(a));
     const sel = document.getElementById('vsel');
     sel.innerHTML = voices.map((v, i) =>
-      `<option value="${i}">${v.name.slice(0,22)}${v.default?' ★':''}</option>`
-    ).join('') || '<option>No EN voice</option>';
+      `<option value="${i}">${v.name.slice(0, 28)}</option>`
+    ).join('');
     selVoice = voices[0] || null;
   }
   synth.addEventListener('voiceschanged', loadVoices);
