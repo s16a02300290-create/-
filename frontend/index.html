@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily English News — Listening Practice</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --card: #1e2235;
+      --accent: #6c63ff;
+      --accent2: #ff6584;
+      --text: #e8eaf0;
+      --muted: #8b92a8;
+      --border: #2a2d42;
+      --success: #4ade80;
+      --warn: #fbbf24;
+      --beginner: #4ade80;
+      --intermediate: #fbbf24;
+      --advanced: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .logo-icon { font-size: 1.5rem; }
+    .logo-text {
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .date-badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Main layout */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Status bar */
+    #status-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+    }
+    .status-dot.loading { background: var(--warn); }
+    .status-dot.error { background: var(--accent2); }
+
+    /* Player bar */
+    #player-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+    #player-bar.visible { display: block; }
+    .player-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .play-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s;
+      flex-shrink: 0;
+    }
+    .play-btn:hover { transform: scale(1.08); }
+    .speed-controls {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .speed-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.3rem 0.55rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .speed-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .player-progress {
+      flex: 1;
+      min-width: 120px;
+    }
+    .progress-bar-wrap {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.5s linear;
+    }
+    .voice-select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      max-width: 160px;
+    }
+
+    /* Article grid */
+    #articles-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .article-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+    .article-card:hover { border-color: var(--accent); }
+    .article-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .category-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.2rem 0.65rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .difficulty-tag {
+      border-radius: 20px;
+      padding: 0.2rem 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .difficulty-tag.beginner { background: rgba(74,222,128,0.15); color: var(--beginner); }
+    .difficulty-tag.intermediate { background: rgba(251,191,36,0.15); color: var(--intermediate); }
+    .difficulty-tag.advanced { background: rgba(248,113,113,0.15); color: var(--advanced); }
+
+    .article-number {
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .article-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+    }
+    .source-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .summary-text {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: #c8cad8;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Vocabulary section */
+    .vocab-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 600;
+      user-select: none;
+      margin-bottom: 0.75rem;
+    }
+    .vocab-toggle svg { transition: transform 0.2s; }
+    .vocab-toggle.open svg { transform: rotate(180deg); }
+
+    .vocab-list {
+      display: none;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .vocab-list.open { display: flex; }
+
+    .vocab-item {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+    }
+    .vocab-word {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+    .vocab-def {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+    .vocab-example {
+      font-size: 0.8rem;
+      color: #9095aa;
+      margin-top: 0.2rem;
+      font-style: italic;
+    }
+
+    /* Question section */
+    .question-box {
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      margin-top: 0.5rem;
+    }
+    .question-label {
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .question-text {
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    /* Card actions */
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .listen-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .listen-btn:hover { opacity: 0.85; }
+    .listen-btn.playing { background: var(--accent2); }
+    .listen-btn svg { flex-shrink: 0; }
+
+    .mark-done-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mark-done-btn.done {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    /* Empty / error states */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .empty-desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    /* History sidebar toggle */
+    .history-section {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .history-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    .history-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .history-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--muted);
+    }
+    .history-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .history-chip.current { border-color: var(--accent); color: var(--accent); }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1.1rem;
+      font-size: 0.85rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 600px) {
+      header { padding: 1rem; }
+      main { padding: 1rem; }
+      .header-right { gap: 0.5rem; }
+      .date-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-icon">🎧</span>
+    <span class="logo-text">Daily English News</span>
+  </div>
+  <div class="header-right">
+    <span class="date-badge" id="header-date"></span>
+    <button class="btn btn-outline" id="refresh-btn" onclick="generateNews()">Generate</button>
+  </div>
+</header>
+
+<main>
+  <div id="status-bar">
+    <div class="spinner" id="status-spinner" style="display:none"></div>
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Loading today's news...</span>
+  </div>
+
+  <div id="player-bar">
+    <div class="player-title" id="player-title">—</div>
+    <div class="player-controls">
+      <button class="play-btn" id="play-pause-btn" onclick="togglePlay()">▶</button>
+      <div class="player-progress">
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <div class="speed-controls">
+        <button class="speed-btn" data-speed="0.75" onclick="setSpeed(0.75)">×0.75</button>
+        <button class="speed-btn active" data-speed="1" onclick="setSpeed(1)">×1</button>
+        <button class="speed-btn" data-speed="1.25" onclick="setSpeed(1.25)">×1.25</button>
+        <button class="speed-btn" data-speed="1.5" onclick="setSpeed(1.5)">×1.5</button>
+      </div>
+      <select class="voice-select" id="voice-select" onchange="onVoiceChange()"></select>
+    </div>
+  </div>
+
+  <div id="articles-container"></div>
+
+  <div class="history-section" id="history-section" style="display:none">
+    <div class="history-title">PAST EDITIONS</div>
+    <div class="history-list" id="history-list"></div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const API_BASE = '';
+  let synth = window.speechSynthesis;
+  let currentUtterance = null;
+  let isPlaying = false;
+  let currentArticleId = null;
+  let currentSpeed = 1;
+  let availableVoices = [];
+  let selectedVoice = null;
+  let doneArticles = new Set(JSON.parse(localStorage.getItem('doneArticles') || '[]'));
+  let currentDateStr = null;
+
+  // Init
+  document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  function setStatus(state, message) {
+    const spinner = document.getElementById('status-spinner');
+    const dot = document.getElementById('status-dot');
+    const text = document.getElementById('status-text');
+    spinner.style.display = state === 'loading' ? 'block' : 'none';
+    dot.style.display = state === 'loading' ? 'none' : 'block';
+    dot.className = 'status-dot ' + (state === 'error' ? 'error' : state === 'loading' ? 'loading' : '');
+    text.textContent = message;
+  }
+
+  function showToast(msg, duration = 3000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+
+  // Voices
+  function loadVoices() {
+    availableVoices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+    const sel = document.getElementById('voice-select');
+    sel.innerHTML = '';
+    if (availableVoices.length === 0) {
+      sel.innerHTML = '<option value="">No EN voice</option>';
+      return;
+    }
+    availableVoices.forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = v.name.slice(0, 24) + (v.default ? ' ★' : '');
+      sel.appendChild(opt);
+    });
+    selectedVoice = availableVoices[0];
+  }
+  synth.addEventListener('voiceschanged', loadVoices);
+  loadVoices();
+
+  function onVoiceChange() {
+    const idx = parseInt(document.getElementById('voice-select').value);
+    selectedVoice = availableVoices[idx] || null;
+  }
+
+  // Speed
+  function setSpeed(speed) {
+    currentSpeed = speed;
+    document.querySelectorAll('.speed-btn').forEach(b => {
+      b.classList.toggle('active', parseFloat(b.dataset.speed) === speed);
+    });
+    if (currentUtterance) currentUtterance.rate = speed;
+  }
+
+  // TTS
+  function speak(text, title, articleId) {
+    if (isPlaying) {
+      stopSpeech();
+      if (currentArticleId === articleId) return;
+    }
+    currentArticleId = articleId;
+    const bar = document.getElementById('player-bar');
+    bar.classList.add('visible');
+    document.getElementById('player-title').textContent = '🎧 ' + title;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = currentSpeed;
+    utterance.lang = 'en-US';
+    if (selectedVoice) utterance.voice = selectedVoice;
+    currentUtterance = utterance;
+    isPlaying = true;
+
+    updateListenButtons();
+
+    let startTime = Date.now();
+    const estimatedDuration = text.length / 15 * 1000 / currentSpeed;
+
+    const progressInterval = setInterval(() => {
+      if (!isPlaying) { clearInterval(progressInterval); return; }
+      const pct = Math.min(100, (Date.now() - startTime) / estimatedDuration * 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+    }, 200);
+
+    utterance.onend = () => {
+      isPlaying = false;
+      currentUtterance = null;
+      clearInterval(progressInterval);
+      document.getElementById('progress-fill').style.width = '100%';
+      document.getElementById('play-pause-btn').textContent = '▶';
+      updateListenButtons();
+      setTimeout(() => document.getElementById('progress-fill').style.width = '0%', 1500);
+    };
+    utterance.onerror = () => {
+      isPlaying = false;
+      clearInterval(progressInterval);
+      updateListenButtons();
+    };
+
+    document.getElementById('play-pause-btn').textContent = '⏸';
+    synth.speak(utterance);
+  }
+
+  function stopSpeech() {
+    synth.cancel();
+    isPlaying = false;
+    currentUtterance = null;
+    document.getElementById('play-pause-btn').textContent = '▶';
+    updateListenButtons();
+  }
+
+  function togglePlay() {
+    if (synth.paused) {
+      synth.resume();
+      document.getElementById('play-pause-btn').textContent = '⏸';
+    } else if (isPlaying) {
+      synth.pause();
+      document.getElementById('play-pause-btn').textContent = '▶';
+    }
+  }
+
+  function updateListenButtons() {
+    document.querySelectorAll('.listen-btn').forEach(btn => {
+      const id = parseInt(btn.dataset.id);
+      const active = isPlaying && currentArticleId === id;
+      btn.classList.toggle('playing', active);
+      btn.querySelector('.btn-label').textContent = active ? 'Stop' : 'Listen';
+      btn.querySelector('.btn-icon').textContent = active ? '⏹' : '▶';
+    });
+    if (!isPlaying) {
+      document.getElementById('player-bar').classList.remove('visible');
+    }
+  }
+
+  // Mark done
+  function toggleDone(articleId) {
+    const key = currentDateStr + '-' + articleId;
+    if (doneArticles.has(key)) {
+      doneArticles.delete(key);
+    } else {
+      doneArticles.add(key);
+      showToast('✓ Marked as done!');
+    }
+    localStorage.setItem('doneArticles', JSON.stringify([...doneArticles]));
+    document.querySelectorAll('.mark-done-btn').forEach(btn => {
+      if (parseInt(btn.dataset.id) === articleId) {
+        btn.classList.toggle('done', doneArticles.has(key));
+        btn.textContent = doneArticles.has(key) ? '✓ Done' : '○ Mark Done';
+      }
+    });
+  }
+
+  // Vocab toggle
+  function toggleVocab(id) {
+    const list = document.getElementById('vocab-list-' + id);
+    const toggle = document.getElementById('vocab-toggle-' + id);
+    list.classList.toggle('open');
+    toggle.classList.toggle('open');
+  }
+
+  // Render
+  function renderArticles(data) {
+    currentDateStr = data.date || new Date().toISOString().slice(0, 10);
+    const container = document.getElementById('articles-container');
+    container.innerHTML = '';
+
+    if (!data.articles || data.articles.length === 0) {
+      container.innerHTML = `<div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">No articles yet</div>
+        <div class="empty-desc">Press "Generate" to fetch today's news</div>
+      </div>`;
+      return;
+    }
+
+    data.articles.forEach((article, idx) => {
+      const doneKey = currentDateStr + '-' + article.id;
+      const isDone = doneArticles.has(doneKey);
+      const vocabHtml = article.vocabulary?.map(v => `
+        <div class="vocab-item">
+          <div class="vocab-word">${v.word}</div>
+          <div class="vocab-def">${v.definition}</div>
+          ${v.example ? `<div class="vocab-example">"${v.example}"</div>` : ''}
+        </div>
+      `).join('') || '';
+
+      const card = document.createElement('div');
+      card.className = 'article-card';
+      card.id = 'card-' + article.id;
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="card-meta">
+            <span class="category-tag">${article.category || 'News'}</span>
+            <span class="difficulty-tag ${article.difficulty || 'intermediate'}">${article.difficulty || 'intermediate'}</span>
+          </div>
+          <div class="article-number">${idx + 1}</div>
+        </div>
+        <div class="article-title">${article.title}</div>
+        <div class="source-label">📰 ${article.source || ''}</div>
+        <div class="summary-text">${article.summary}</div>
+
+        ${vocabHtml ? `
+          <div class="vocab-toggle" id="vocab-toggle-${article.id}" onclick="toggleVocab(${article.id})">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <path d="M6 8L1 3h10z"/>
+            </svg>
+            Key Vocabulary (${article.vocabulary?.length || 0} words)
+          </div>
+          <div class="vocab-list" id="vocab-list-${article.id}">
+            ${vocabHtml}
+          </div>
+        ` : ''}
+
+        ${article.question ? `
+          <div class="question-box">
+            <div class="question-label">COMPREHENSION QUESTION</div>
+            <div class="question-text">💭 ${article.question}</div>
+          </div>
+        ` : ''}
+
+        <div class="card-actions">
+          <button class="listen-btn" data-id="${article.id}"
+            onclick="speak(${JSON.stringify(article.summary)}, ${JSON.stringify(article.title)}, ${article.id})">
+            <span class="btn-icon">▶</span>
+            <span class="btn-label">Listen</span>
+          </button>
+          <button class="mark-done-btn ${isDone ? 'done' : ''}" data-id="${article.id}"
+            onclick="toggleDone(${article.id})">
+            ${isDone ? '✓ Done' : '○ Mark Done'}
+          </button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    setStatus('ok', `${data.articles.length} articles loaded for ${currentDateStr}`);
+  }
+
+  // API calls
+  async function loadTodayNews() {
+    setStatus('loading', 'Loading today\'s news...');
+    try {
+      const res = await fetch(API_BASE + '/api/news/today');
+      if (res.status === 404) {
+        setStatus('loading', 'Generating today\'s news... (this takes ~30 seconds)');
+        await generateNews();
+        return;
+      }
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      renderArticles(data);
+    } catch (e) {
+      setStatus('error', 'Failed to load: ' + e.message);
+      document.getElementById('articles-container').innerHTML = `<div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Could not load news</div>
+        <div class="empty-desc">${e.message}</div>
+        <button class="btn" onclick="loadTodayNews()">Try Again</button>
+      </div>`;
+    }
+    loadHistory();
+  }
+
+  async function generateNews() {
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    setStatus('loading', 'Fetching and summarizing news with AI... (~30s)');
+    try {
+      const res = await fetch(API_BASE + '/api/news/generate', { method: 'POST' });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Generation failed');
+      }
+      await res.json();
+      const dataRes = await fetch(API_BASE + '/api/news/today');
+      const data = await dataRes.json();
+      renderArticles(data);
+      showToast('✨ Today\'s news ready!');
+    } catch (e) {
+      setStatus('error', 'Generation failed: ' + e.message);
+      showToast('Error: ' + e.message, 5000);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Generate';
+    }
+    loadHistory();
+  }
+
+  async function loadHistory() {
+    try {
+      const res = await fetch(API_BASE + '/api/news/history');
+      const history = await res.json();
+      if (history.length > 0) {
+        const section = document.getElementById('history-section');
+        section.style.display = 'block';
+        const list = document.getElementById('history-list');
+        list.innerHTML = history.map(h => `
+          <div class="history-chip ${h.date === currentDateStr ? 'current' : ''}"
+            onclick="loadDateNews('${h.date}')">
+            ${h.date} (${h.articles_count})
+          </div>
+        `).join('');
+      }
+    } catch (e) {}
+  }
+
+  async function loadDateNews(dateStr) {
+    setStatus('loading', 'Loading ' + dateStr + '...');
+    try {
+      const res = await fetch(API_BASE + '/api/news/' + dateStr);
+      const data = await res.json();
+      renderArticles(data);
+      document.getElementById('articles-container').scrollIntoView({ behavior: 'smooth' });
+    } catch (e) {
+      setStatus('error', 'Failed: ' + e.message);
+    }
+  }
+
+  // Start
+  loadTodayNews();
+</script>
+</body>
+</html>
